@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(Main.MODID)
 public class Main {
-    public static final String MODID = "mymod";
+    public static final String MODID = "hashtags";
 
     private static final Logger LOGGER = LogManager.getLogger();
 

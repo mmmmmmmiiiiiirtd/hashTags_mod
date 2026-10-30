@@ -52,19 +52,20 @@ public class Hasher {
         return hashTag.get(hash);
     }
 
-    private static final long calculateEntryHash(Object key, Object value) {
-        return Objects.hashCode(key) ^ Objects.hashCode(value);
-    }
-
     private static final long calculateMapHash(Map<?, ?> map) {
-        if (map == null) {
-            return 0;
+        if (map == null || map.isEmpty()) {
+            return 0L;
         }
 
-        long totalHash = 0;
+        long totalHash = 1125899906842597L;
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            totalHash += calculateEntryHash(entry.getKey(), entry.getValue());
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+
+            long entryHash = java.util.Objects.hash(key, value);
+
+            totalHash = totalHash * 31L + entryHash;
         }
 
         return totalHash;
