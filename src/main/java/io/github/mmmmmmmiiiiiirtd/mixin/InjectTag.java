@@ -1,11 +1,11 @@
-package io.modrinth.mmmmmmmiiiiiirtd.mixin;
+package io.github.mmmmmmmiiiiiirtd.mixin;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.component.CustomData;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import io.modrinth.mmmmmmmiiiiiirtd.Hasher;
+import io.github.mmmmmmmiiiiiirtd.Hasher;
 
 import java.util.function.Consumer;
 

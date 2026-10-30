@@ -1,4 +1,4 @@
-package io.modrinth.mmmmmmmiiiiiirtd;
+package io.github.mmmmmmmiiiiiirtd;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.nbt.*;

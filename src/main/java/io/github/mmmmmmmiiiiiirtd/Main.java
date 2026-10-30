@@ -1,4 +1,4 @@
-package io.modrinth.mmmmmmmiiiiiirtd;
+package io.github.mmmmmmmiiiiiirtd;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
