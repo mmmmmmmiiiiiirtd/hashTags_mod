@@ -189,6 +189,3 @@ idea {
     }
 }
 
-tasks.named('processResources', ProcessResources) {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
