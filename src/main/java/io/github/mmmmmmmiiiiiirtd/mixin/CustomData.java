@@ -1,7 +1,7 @@
 package io.github.mmmmmmmiiiiiirtd.mixin;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.component.CustomData;
+import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -9,18 +9,19 @@ import io.github.mmmmmmmiiiiiirtd.Hasher;
 
 import java.util.function.Consumer;
 
-public class InjectTag {
+@Mixin(CustomData.class)
+public class CustomData {
     private static final String PROXIED_HASH_KEY = "HashToTag";
     private static final ThreadLocal<Boolean> IS_PROCESSING = ThreadLocal.withInitial(() -> false);
 
     @Inject(method = "update(Ljava/util/function/Consumer;)Lnet/minecraft/world/item/component/CustomData;", at = @At("HEAD"), cancellable = true)
-    private void onUpdateAndHash(Consumer<CompoundTag> updater, CallbackInfoReturnable<CustomData> cir){
+    private void onUpdateAndHash(Consumer<CompoundTag> updater, CallbackInfoReturnable<net.minecraft.world.item.component.CustomData> cir){
         if (IS_PROCESSING.get()) return;
 
         try {
             IS_PROCESSING.set(true);
 
-            CustomData currentInstance = (CustomData) (Object) this;
+            net.minecraft.world.item.component.CustomData currentInstance = (net.minecraft.world.item.component.CustomData) (Object) this;
             CompoundTag currentTag = currentInstance.copyTag();
 
             if (currentTag.size() == 1 && currentTag.contains(PROXIED_HASH_KEY)) {
@@ -32,12 +33,12 @@ public class InjectTag {
 
             updater.accept(currentTag);
 
-            long hash = Hasher.tagToHash(currentTag);
+            long hash = Hasher.registerTag(currentTag);
 
             CompoundTag newTag = new CompoundTag();
             newTag.putLong(PROXIED_HASH_KEY, hash);
 
-            cir.setReturnValue(CustomData.of(newTag));
+            cir.setReturnValue(net.minecraft.world.item.component.CustomData.of(newTag));
         } finally {
             IS_PROCESSING.set(false);
         }

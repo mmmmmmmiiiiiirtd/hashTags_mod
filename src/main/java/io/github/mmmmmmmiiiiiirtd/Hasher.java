@@ -3,10 +3,13 @@ package io.github.mmmmmmmiiiiiirtd;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.nbt.*;
 
+import java.lang.ref.ReferenceQueue;
 import java.util.*;
 
 public class Hasher {
-    static Long2ObjectOpenHashMap<CompoundTag> hashTag = new Long2ObjectOpenHashMap<>();
+    private static final Long2ObjectOpenHashMap<TagEntry> hashTag = new Long2ObjectOpenHashMap<>();
+
+    private final ReferenceQueue<CompoundTag> queue = new ReferenceQueue<>();
 
     private static Map<String, Object> toMap(CompoundTag compound) {
         Map<String, Object> map = new HashMap<>();
@@ -40,16 +43,35 @@ public class Hasher {
         return tag.toString(); // На крайний случай
     }
 
-    public static long tagToHash(CompoundTag tag){
+    public static long registerTag(CompoundTag tag) {
         long hash = calculateMapHash(toMap(tag));
-        if (!hashTag.containsKey(hash)){
-            hashTag.put(hash, tag);
+
+        TagEntry entry = hashTag.get(hash);
+        if (entry != null) {
+            entry.refCount++;
+        } else {
+            hashTag.put(hash, new TagEntry(tag));
         }
         return hash;
     }
 
+    public static long tagToHash(CompoundTag tag) {
+        return calculateMapHash(toMap(tag));
+    }
+
     public static CompoundTag hashToTag(long hash){
-        return hashTag.get(hash);
+        TagEntry entry = hashTag.get(hash);
+        return entry != null ? entry.tag : null;
+    }
+
+    public static void releaseTag(long hash) {
+        TagEntry entry = hashTag.get(hash);
+        if (entry != null) {
+            entry.refCount--;
+            if (entry.refCount <= 0) {
+                hashTag.remove(hash);
+            }
+        }
     }
 
     private static final long calculateMapHash(Map<?, ?> map) {
@@ -69,5 +91,15 @@ public class Hasher {
         }
 
         return totalHash;
+    }
+
+    private static class TagEntry {
+        final CompoundTag tag;
+        int refCount;
+
+        TagEntry(CompoundTag tag) {
+            this.tag = tag;
+            this.refCount = 1;
+        }
     }
 }
